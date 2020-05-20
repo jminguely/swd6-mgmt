@@ -22,5 +22,18 @@ fb.auth.onAuthStateChanged((user) => {
   if (user) {
     store.commit('setCurrentUser', user);
     store.dispatch('fetchUserProfile');
+
+    // realtime updates from our posts collection
+    fb.charactersCollection.orderBy('name', 'asc').onSnapshot((querySnapshot) => {
+      const characters = [];
+
+      querySnapshot.forEach((doc) => {
+        const character = doc.data();
+        character.id = doc.id;
+        characters.push(character);
+      });
+
+      store.commit('setCharacters', characters);
+    });
   }
 });

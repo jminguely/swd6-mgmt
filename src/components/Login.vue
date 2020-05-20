@@ -141,8 +141,7 @@ export default {
         .createUserWithEmailAndPassword(this.signupForm.email, this.signupForm.password)
         .then((data) => {
           const { user } = data;
-          console.log('user', user);
-          console.log('user', user);
+
           this.$store.commit('setCurrentUser', user);
           fb.usersCollection
             .doc(user.uid)
