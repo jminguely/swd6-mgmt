@@ -10,6 +10,7 @@ export default new Vuex.Store({
     currentUser: null,
     userProfile: {},
     characters: [],
+    campaigns: [],
   },
   mutations: {
     setCurrentUser(state, val) {
@@ -21,12 +22,16 @@ export default new Vuex.Store({
     setCharacters(state, val) {
       state.characters = val;
     },
+    setCampaigns(state, val) {
+      state.campaigns = val;
+    },
   },
   actions: {
     clearData({ commit }) {
       commit('setCurrentUser', null);
       commit('setUserProfile', {});
       commit('setCharacters', null);
+      commit('setCampaigns', null);
     },
     fetchUserProfile({ commit, state }) {
       fb.usersCollection

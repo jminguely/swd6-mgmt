@@ -1,5 +1,5 @@
 <template>
-  <div id="dashboard">
+  <div id="characters">
     <section>
       <div class="profile">
         <h5>{{ userProfile.name }}</h5>
@@ -16,8 +16,7 @@
 
       <ul v-if="characters.length">
         <li v-for="character in characters" v-bind:key="character.id" class="character">
-          <span>{{ character.userName }}</span> -
-          <span>{{ character.name }}</span>
+          {{ character.name }}
         </li>
       </ul>
       <div v-else>
@@ -50,7 +49,6 @@ export default {
           createdOn: new Date(),
           name: this.character.name,
           userId: this.currentUser.uid,
-          userName: this.userProfile.name,
         })
         .then(() => {
           this.post.content = '';

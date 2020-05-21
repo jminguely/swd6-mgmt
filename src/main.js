@@ -24,16 +24,35 @@ fb.auth.onAuthStateChanged((user) => {
     store.dispatch('fetchUserProfile');
 
     // realtime updates from our posts collection
-    fb.charactersCollection.orderBy('name', 'asc').onSnapshot((querySnapshot) => {
-      const characters = [];
+    fb.charactersCollection
+      .where('userId', '==', user.uid)
+      .orderBy('name', 'asc')
+      .onSnapshot((querySnapshot) => {
+        const characters = [];
 
-      querySnapshot.forEach((doc) => {
-        const character = doc.data();
-        character.id = doc.id;
-        characters.push(character);
+        querySnapshot.forEach((doc) => {
+          const character = doc.data();
+          character.id = doc.id;
+          characters.push(character);
+        });
+
+        store.commit('setCharacters', characters);
       });
 
-      store.commit('setCharacters', characters);
-    });
+    // realtime updates from our posts collection
+    fb.campaignsCollection
+      .where('userId', '==', user.uid)
+      // .orderBy('name', 'asc')
+      .onSnapshot((querySnapshot) => {
+        const campaigns = [];
+
+        querySnapshot.forEach((doc) => {
+          const character = doc.data();
+          character.id = doc.id;
+          campaigns.push(character);
+        });
+
+        store.commit('setCampaigns', campaigns);
+      });
   }
 });

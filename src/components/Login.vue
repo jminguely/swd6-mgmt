@@ -127,7 +127,7 @@ export default {
           this.$store.commit('setCurrentUser', user);
           this.$store.dispatch('fetchUserProfile');
           this.performingRequest = false;
-          this.$router.push('/dashboard');
+          this.$router.push('/campaigns');
         })
         .catch((err) => {
           console.log(err);
@@ -151,7 +151,7 @@ export default {
             .then(() => {
               this.$store.dispatch('fetchUserProfile');
               this.performingRequest = false;
-              this.$router.push('/dashboard');
+              this.$router.push('/campaigns');
             })
             .catch((err) => {
               console.log(err);

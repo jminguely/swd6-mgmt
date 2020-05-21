@@ -4,7 +4,8 @@ import firebase from 'firebase';
 
 import Login from '../components/Login.vue';
 import Homepage from '../components/Homepage.vue';
-import Dashboard from '../components/Dashboard.vue';
+import Campaigns from '../components/Campaigns.vue';
+import Characters from '../components/Characters.vue';
 import Settings from '../components/Settings.vue';
 
 Vue.use(VueRouter);
@@ -20,9 +21,17 @@ const routes = [
     name: 'Login',
     component: Login,
   }, {
-    path: '/dashboard',
-    name: 'Dashboard',
-    component: Dashboard,
+    path: '/campaigns',
+    name: 'Campaigns',
+    component: Campaigns,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/characters',
+    name: 'Characters',
+    component: Characters,
     meta: {
       requiresAuth: true,
     },
