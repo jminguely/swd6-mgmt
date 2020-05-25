@@ -14,7 +14,9 @@
               v-bind:key="character.id"
               class="character"
             >
-              <a @click="addCharacterToCampaign(character.id)">{{ character.name }}</a>
+              <a @click="addCharacterToCampaign(character.id)"
+                >{{ character.name }}, {{ character.type }}</a
+              >
             </li>
           </ul>
           <h2>players</h2>
@@ -58,7 +60,9 @@ export default {
   computed: {
     ...mapState(['characters']),
     availableCharacters() {
-      return this.characters.filter((el) => !this.campaign.characters.includes(el.id));
+      return this.characters.filter(
+        (el) => !this.campaign.characters.includes(el.id) && el.type === 'PC',
+      );
     },
   },
   watch: {

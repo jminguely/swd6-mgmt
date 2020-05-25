@@ -6,6 +6,12 @@
           <p>edit a character</p>
           <form>
             <input v-model.trim="character.name" type="text" id="characterName" />
+            <select v-model="character.type">
+              <option disabled value="">Choose</option>
+              <option value="PC">PC</option>
+              <option value="NPC">NPC</option>
+              <option value="Archetype">Archetype</option>
+            </select>
           </form>
         </div>
       </div>
