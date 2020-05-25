@@ -49,6 +49,7 @@ export default {
           createdOn: new Date(),
           name: this.campaign.name,
           userId: this.currentUser.uid,
+          characters: [],
         })
         .then(() => {
           this.post.content = '';

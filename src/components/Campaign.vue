@@ -7,6 +7,28 @@
           <form>
             <input v-model.trim="campaign.name" type="text" id="campaignName" />
           </form>
+          <h2>characters available</h2>
+          <ul v-if="availableCharacters.length">
+            <li
+              v-for="character in availableCharacters"
+              v-bind:key="character.id"
+              class="character"
+            >
+              <a @click="addCharacterToCampaign(character.id)">{{ character.name }}</a>
+            </li>
+          </ul>
+          <h2>players</h2>
+          <ul v-if="this.campaign.characters">
+            <li
+              v-for="(characterId, index) in this.campaign.characters"
+              v-bind:key="index"
+              class="character"
+            >
+              <a @click="removeCharacterToCampaign(index)">
+                {{ characters.filter((item) => item.id == characterId)[0].name }}
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
     </section>
@@ -14,6 +36,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 const fb = require('../firebase');
 
 export default {
@@ -21,13 +45,21 @@ export default {
   props: {
     id: {
       type: String,
-      default: 'asdf',
     },
   },
   data() {
     return {
-      campaign: {},
+      campaign: {
+        name: '',
+        characters: [],
+      },
     };
+  },
+  computed: {
+    ...mapState(['characters']),
+    availableCharacters() {
+      return this.characters.filter((el) => !this.campaign.characters.includes(el.id));
+    },
   },
   watch: {
     campaign: {
@@ -56,6 +88,14 @@ export default {
         .doc(this.id)
         .set(this.campaign)
         .then(() => {});
+    },
+    addCharacterToCampaign(characterId) {
+      this.campaign.characters.push(characterId);
+      this.updateCampaign();
+    },
+    removeCharacterToCampaign(index) {
+      this.campaign.characters.splice(index, 1);
+      this.updateCampaign();
     },
   },
 };
