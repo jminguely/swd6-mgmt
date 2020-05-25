@@ -16,7 +16,7 @@
 
       <ul v-if="campaigns.length">
         <li v-for="campaign in campaigns" v-bind:key="campaign.id" class="campaign">
-          {{ campaign.name }}
+          <router-link :to="{ path: `campaign/${campaign.id}` }"> {{ campaign.name }}</router-link>
         </li>
       </ul>
       <div v-else>

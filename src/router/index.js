@@ -4,6 +4,7 @@ import firebase from 'firebase';
 
 import Login from '../components/Login.vue';
 import Homepage from '../components/Homepage.vue';
+import Campaign from '../components/Campaign.vue';
 import Campaigns from '../components/Campaigns.vue';
 import Characters from '../components/Characters.vue';
 import Settings from '../components/Settings.vue';
@@ -24,6 +25,14 @@ const routes = [
     path: '/campaigns',
     name: 'Campaigns',
     component: Campaigns,
+    meta: {
+      requiresAuth: true,
+    },
+  }, {
+    path: '/campaign/:id',
+    name: 'Campaign',
+    component: Campaign,
+    props: true,
     meta: {
       requiresAuth: true,
     },
