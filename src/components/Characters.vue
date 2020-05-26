@@ -16,7 +16,7 @@
 
       <ul v-if="characters.length">
         <li v-for="character in characters" v-bind:key="character.id" class="character">
-          <router-link :to="{ path: `character/${character.id}` }">
+          <router-link :to="{ path: `characters/${character.id}` }">
             {{ character.name }}</router-link
           >
         </li>

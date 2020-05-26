@@ -6,27 +6,19 @@
           <div class="container-fluid">
             <div class="row">
               <div class="col-12">
-                <h1>{{ campaign.name }}</h1>
-                <form>
-                  <div class="form-group row">
-                    <label for="campaignName" class="col-sm-2 col-form-label">Name</label>
-                    <input v-model.trim="campaign.name" type="text" id="campaignName" />
-                  </div>
-                </form>
+                <h1>{{ campaign.name }} — Fight!</h1>
                 <div class="row">
                   <div class="col-md-6">
                     <h2>players</h2>
-                    <ul v-if="this.campaign.characters">
+                    <ul v-if="availablePlayers">
                       <li
-                        v-for="(characterId, index) in this.campaign.characters"
+                        v-for="(character, index) in availablePlayers"
                         v-bind:key="index"
                         class="character"
                       >
-                        <a @click="removeCharacterToCampaign(index)">
-                          {{
-                          characters.filter((item) => item.id == characterId)[0].name
-                          }}
-                        </a>
+                        <a
+                          @click="removeCharacterToCampaign(index)"
+                        >{{ character.name }}, {{ character.attributes.dex }}</a>
                       </li>
                     </ul>
                   </div>
@@ -38,17 +30,25 @@
                         v-bind:key="character.id"
                         class="character"
                       >
-                        <a @click="addCharacterToCampaign(character.id)">{{ character.name }}</a>
+                        <a
+                          @click="addCharacterToCampaign(character.id)"
+                        >{{ character.name }}, {{ character.type }}</a>
                       </li>
                     </ul>
                   </div>
                 </div>
               </div>
               <div class="col-12 my-5">
-                <router-link
-                  :to="{ path: `/campaigns/${id}/encounter` }"
-                  class="btn btn-lg btn-danger"
-                >Fight!</router-link>
+                <a @click="computeInitiative" class="btn btn-lg btn-danger">Initiative!</a>
+              </div>
+              <div class="col-12 border">
+                <h2>Round</h2>
+                <ul v-if="round.length">
+                  <li v-for="(step, index) in round" v-bind:key="index">
+                    {{ characters.filter((item) => item.id == step.characterId)[0].name }} —
+                    {{ Math.floor(step.score) }}
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -76,22 +76,22 @@ export default {
         name: '',
         characters: [],
       },
+      round: [],
+      NPCIndexes: [],
     };
   },
   computed: {
     ...mapState(['characters']),
     availableCharacters() {
       return this.characters.filter(
-        (el) => !this.campaign.characters.includes(el.id) && el.type === 'PC',
+        (el) => !this.campaign.characters.includes(el.id) || el.type === 'NPC',
       );
     },
-  },
-  watch: {
-    campaign: {
-      handler() {
-        return this.updateCampaign();
-      },
-      deep: true,
+    availablePlayers() {
+      return this.campaign.characters.map((el) => ({
+        id: el,
+        name: this.characters.filter((item) => item.id === el)[0].name,
+      }));
     },
   },
   created() {
@@ -108,19 +108,21 @@ export default {
           }
         });
     },
-    updateCampaign() {
-      fb.campaignsCollection
-        .doc(this.id)
-        .set(this.campaign)
-        .then(() => {});
-    },
     addCharacterToCampaign(characterId) {
       this.campaign.characters.push(characterId);
-      this.updateCampaign();
     },
     removeCharacterToCampaign(index) {
       this.campaign.characters.splice(index, 1);
-      this.updateCampaign();
+    },
+    computeInitiative() {
+      this.round = [];
+      this.campaign.characters.forEach((characterToCompute) => {
+        this.round.push({
+          characterId: characterToCompute,
+          score: 1 + Math.random() * 6,
+        });
+      });
+      this.round.sort((a, b) => b.score - a.score);
     },
   },
 };

@@ -5,6 +5,7 @@ import firebase from 'firebase';
 import Login from '../components/Login.vue';
 import Homepage from '../components/Homepage.vue';
 import Campaign from '../components/Campaign.vue';
+import Encounter from '../components/Encounter.vue';
 import Campaigns from '../components/Campaigns.vue';
 import Character from '../components/Character.vue';
 import Characters from '../components/Characters.vue';
@@ -22,15 +23,17 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login,
-  }, {
+  },
+  {
     path: '/campaigns',
     name: 'Campaigns',
     component: Campaigns,
     meta: {
       requiresAuth: true,
     },
-  }, {
-    path: '/campaign/:id',
+  },
+  {
+    path: '/campaigns/:id',
     name: 'Campaign',
     component: Campaign,
     props: true,
@@ -39,7 +42,16 @@ const routes = [
     },
   },
   {
-    path: '/character/:id',
+    path: '/campaigns/:id/encounter',
+    name: 'Encounter',
+    component: Encounter,
+    props: true,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/characters/:id',
     name: 'Character',
     component: Character,
     props: true,
@@ -54,7 +66,8 @@ const routes = [
     meta: {
       requiresAuth: true,
     },
-  }, {
+  },
+  {
     path: '/settings',
     name: 'Settings',
     component: Settings,
@@ -68,6 +81,7 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes,
+  linkActiveClass: 'active',
 });
 
 router.beforeEach((to, from, next) => {
