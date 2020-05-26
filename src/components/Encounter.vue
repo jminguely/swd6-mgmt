@@ -10,17 +10,18 @@
                 <div class="row">
                   <div class="col-md-6">
                     <h2>players</h2>
-                    <ul v-if="availablePlayers">
+                    <ol v-if="availablePlayers">
                       <li
                         v-for="(character, index) in availablePlayers"
                         v-bind:key="index"
                         class="character"
                       >
-                        <a
-                          @click="removeCharacterToCampaign(index)"
-                        >{{ character.name }}, {{ character.attributes.dex }}</a>
+                        <a @click="removeCharacterToCampaign(index)">
+                          {{ character.name }},
+                          {{ character.attributes ? character.attributes.dex || '2d' : '2d' }}
+                        </a>
                       </li>
-                    </ul>
+                    </ol>
                   </div>
                   <div class="col-md-6">
                     <h2>characters available</h2>
@@ -41,14 +42,40 @@
               <div class="col-12 my-5">
                 <a @click="computeInitiative" class="btn btn-lg btn-danger">Initiative!</a>
               </div>
-              <div class="col-12 border">
+              <div class="col-10 offset-1 border py-3">
                 <h2>Round</h2>
-                <ul v-if="round.length">
+                <ol v-if="round.length">
                   <li v-for="(step, index) in round" v-bind:key="index">
-                    {{ characters.filter((item) => item.id == step.characterId)[0].name }} —
-                    {{ Math.floor(step.score) }}
+                    {{ characters.find((item) => item.id == step.characterId).name }}
+                    <small
+                      class="text-muted"
+                    >
+                      (
+                      <span v-for="(roll, index) in step.rolls.dices" v-bind:key="index">
+                        <span
+                          :class="{
+                            'text-striked' : roll.isRollValid == false,
+                            'font-weight-bold' : roll.isRollWild == true,
+                            'text-danger' : roll.isRollCritFail == true,
+                            'text-success' : roll.isRollCritWin == true}"
+                        >{{roll.result}}</span>
+                        <!-- eslint-disable -->
+                        <span
+                          v-if="roll.isRollCritWin"
+                          class="ml-1"
+                        >+ [{{ step.rolls.wildRolls.join(" + ") }}]</span>
+                        <!-- eslint-enable -->
+
+                        <span v-if="index+1 != step.rolls.dices.length" class="mx-1">+</span>
+                      </span>
+                      )
+                      =
+                      <span
+                        class="font-weight-bold"
+                      >{{step.rolls.score}}</span>
+                    </small>
                   </li>
-                </ul>
+                </ol>
               </div>
             </div>
           </div>
@@ -90,7 +117,8 @@ export default {
     availablePlayers() {
       return this.campaign.characters.map((el) => ({
         id: el,
-        name: this.characters.filter((item) => item.id === el)[0].name,
+        name: this.characters.find((item) => item.id === el).name,
+        attributes: this.characters.find((item) => item.id === el).attributes,
       }));
     },
   },
@@ -114,15 +142,87 @@ export default {
     removeCharacterToCampaign(index) {
       this.campaign.characters.splice(index, 1);
     },
+    rollWildDice(wildRolls) {
+      const roll = Math.floor(Math.random() * 6 + 1);
+      wildRolls.push(roll);
+
+      if (roll === 6) {
+        return this.rollWildDice(wildRolls);
+      }
+      return wildRolls;
+    },
+    rollDices(diceValue) {
+      const regexp = /^(\d*)d\+?(\d*)?$/i;
+
+      const rollQty = regexp.exec(diceValue)[1];
+      const rollModifier = regexp.exec(diceValue)[2] || 0;
+
+      const dices = [];
+      let wildRolls = [];
+      let rollsHaveCritFail = false;
+      let rollsHaveCritWin = false;
+
+      for (let i = 0; i < rollQty; i += 1) {
+        const roll = Math.floor(Math.random() * 6 + 1);
+        const isRollWild = i === 0;
+        let isRollCritFail = false;
+        let isRollCritWin = false;
+
+        if (isRollWild && roll === 6) {
+          isRollCritWin = true;
+          wildRolls = this.rollWildDice([]);
+        }
+
+        if (isRollWild && roll === 1) {
+          isRollCritFail = true;
+        }
+
+        if (isRollCritWin) rollsHaveCritWin = true;
+        if (isRollCritFail) rollsHaveCritFail = true;
+
+        dices.push({
+          type: 'd6',
+          isRollWild,
+          result: roll,
+          isRollCritFail,
+          isRollCritWin,
+          isRollValid: true,
+        });
+      }
+
+      let score = dices.reduce((a, b) => ({ result: a.result + b.result })).result;
+
+      if (rollsHaveCritWin) {
+        score += wildRolls.reduce((a, b) => a + b);
+      }
+
+      if (rollsHaveCritFail) {
+        const maxDice = dices.reduce((a, b) => (a.result > b.result ? a : b));
+        maxDice.isRollValid = false;
+        score -= maxDice.result;
+      }
+
+      dices.push({
+        type: 'modifier',
+        result: rollModifier,
+      });
+
+      return { score, dices, wildRolls };
+    },
     computeInitiative() {
       this.round = [];
-      this.campaign.characters.forEach((characterToCompute) => {
+      this.campaign.characters.forEach((characterIdToCompute) => {
+        const characterToCompute = this.characters.find((item) => item.id === characterIdToCompute);
+        const dexDice = characterToCompute.attributes
+          ? characterToCompute.attributes.dex || '2d'
+          : '2d';
+
         this.round.push({
-          characterId: characterToCompute,
-          score: 1 + Math.random() * 6,
+          characterId: characterIdToCompute,
+          rolls: this.rollDices(dexDice),
         });
       });
-      this.round.sort((a, b) => b.score - a.score);
+      this.round.sort((a, b) => b.rolls.score - a.rolls.score);
     },
   },
 };
