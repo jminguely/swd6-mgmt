@@ -26,6 +26,14 @@
                           {{
                           characters.filter((item) => item.id == characterId)[0].name
                           }}
+                          <small
+                            v-if="characters.filter(
+                              (item) => item.id == characterId)[0].player"
+                            class="text-muted"
+                          >
+                            ({{
+                            characters.filter((item) => item.id == characterId)[0].player }})
+                          </small>
                         </a>
                       </li>
                     </ul>

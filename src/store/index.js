@@ -63,7 +63,6 @@ fb.auth.onAuthStateChanged((user) => {
         querySnapshot.forEach((doc) => {
           const character = doc.data();
           character.id = doc.id;
-          console.log(character);
           characters.push(character);
         });
 
