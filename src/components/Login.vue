@@ -9,7 +9,8 @@
       <div class="col1">
         <h1>Vuegram</h1>
         <p>
-          Welcome to the <a href="https://savvyapps.com/" target="_blank">Savvy Apps</a> sample
+          Welcome to the
+          <a href="https://savvyapps.com/" target="_blank">Savvy Apps</a> sample
           social media web app powered by Vue.js and Firebase. Build this project by checking out
           The Definitive Guide to Getting Started with Vue.js
         </p>
@@ -129,8 +130,8 @@ export default {
           this.performingRequest = false;
           this.$router.push('/campaigns');
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          // console.log(err);
           this.performingRequest = false;
         });
     },
@@ -153,13 +154,13 @@ export default {
               this.performingRequest = false;
               this.$router.push('/campaigns');
             })
-            .catch((err) => {
-              console.log(err);
+            .catch(() => {
+              // console.log(err);
               this.performingRequest = false;
             });
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          // console.log(err);
           this.performingRequest = false;
         });
     },
@@ -173,8 +174,8 @@ export default {
           this.passwordResetSuccess = true;
           this.passwordForm.email = '';
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          // console.log(err);
           this.performingRequest = false;
         });
     },

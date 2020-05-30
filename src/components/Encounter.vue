@@ -1,81 +1,111 @@
 <template>
-  <div id="campaign">
+  <div id="encounter">
     <section>
       <div class="profile">
-        <div class="edit-campaign">
+        <div class="edit-encounter">
           <div class="container-fluid">
-            <div class="row">
+            <div class="row py-4">
               <div class="col-12">
-                <h1>{{ campaign.name }} — Fight!</h1>
+                <h1>Fight!</h1>
                 <div class="row">
                   <div class="col-md-6">
-                    <h2>players</h2>
-                    <ol v-if="availablePlayers">
-                      <li
+                    <h2>Joueurs en combat</h2>
+                    <div v-if="availablePlayers">
+                      <a
                         v-for="(character, index) in availablePlayers"
                         v-bind:key="index"
-                        class="character"
+                        @click="removeCharacterToEncounter(index)"
+                        class="btn btn-sm mb-2 mr-2"
+                        :class="{
+                          'btn-secondary': character.type == 'NPC',
+                          'btn-primary': character.type != 'NPC'
+                        }"
                       >
-                        <a @click="removeCharacterToCampaign(index)">
-                          {{ character.name }},
-                          {{ character.attributes ? character.attributes.dex || '2d' : '2d' }}
-                        </a>
-                      </li>
-                    </ol>
+                        {{ character.name }}
+                        <small
+                          v-if="character.npcId"
+                          class="badge badge-dark"
+                        >{{ character.npcId }}</small>
+                      </a>
+                    </div>
                   </div>
                   <div class="col-md-6">
-                    <h2>characters available</h2>
-                    <ul v-if="availableCharacters.length">
-                      <li
+                    <h2>Personnages disponibles</h2>
+                    <div v-if="availableCharacters.length">
+                      <a
                         v-for="character in availableCharacters"
                         v-bind:key="character.id"
-                        class="character"
-                      >
-                        <a
-                          @click="addCharacterToCampaign(character.id)"
-                        >{{ character.name }}, {{ character.type }}</a>
-                      </li>
-                    </ul>
+                        class="btn btn-sm mb-2 mr-2"
+                        :class="{
+                          'btn-secondary': character.type == 'NPC',
+                          'btn-primary': character.type != 'NPC'
+                        }"
+                        @click="addCharacterToEncounter(character.id)"
+                      >{{ character.name }}, {{ character.type }}</a>
+                    </div>
                   </div>
                 </div>
               </div>
               <div class="col-12 my-5">
-                <a @click="computeInitiative" class="btn btn-lg btn-danger">Initiative!</a>
+                <h2>Roll</h2>
+                <a
+                  @click="executeRolls(attribute)"
+                  v-for="attribute in attributes"
+                  v-bind:key="attribute"
+                  class="btn btn-danger btn-sm mb-2 mr-2"
+                >{{attribute}}</a>
               </div>
-              <div class="col-10 offset-1 border py-3">
-                <h2>Round</h2>
-                <ol v-if="round.length">
-                  <li v-for="(step, index) in round" v-bind:key="index">
-                    {{ characters.find((item) => item.id == step.characterId).name }}
-                    <small
-                      class="text-muted"
-                    >
-                      (
-                      <span v-for="(roll, index) in step.rolls.dices" v-bind:key="index">
-                        <span
-                          :class="{
+              <div class="col-12">
+                <table class="table table-stripped" v-if="round.length">
+                  <thead>
+                    <tr>
+                      <td>Name</td>
+                      <td>Dice</td>
+                      <td>Value</td>
+                      <td>Result</td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(step, index) in round" v-bind:key="index">
+                      <td>
+                        {{ characters.find((item) => item.id == step.characterId).name }}
+                        <small
+                          v-if="step.npcId"
+                          class="badge badge-dark"
+                        >{{ step.npcId }}</small>
+                      </td>
+                      <td>{{ step.attribute }}</td>
+                      <td>{{ step.valueDice }}</td>
+                      <td>
+                        <small>
+                          (
+                          <span v-for="(roll, index) in step.rolls.dices" v-bind:key="index">
+                            <span
+                              :class="{
                             'text-striked' : roll.isRollValid == false,
                             'font-weight-bold' : roll.isRollWild == true,
                             'text-danger' : roll.isRollCritFail == true,
                             'text-success' : roll.isRollCritWin == true}"
-                        >{{roll.result}}</span>
-                        <!-- eslint-disable -->
-                        <span
-                          v-if="roll.isRollCritWin"
-                          class="ml-1"
-                        >+ [{{ step.rolls.wildRolls.join(" + ") }}]</span>
-                        <!-- eslint-enable -->
+                            >{{roll.result}}</span>
+                            <!-- eslint-disable -->
+                            <span
+                              v-if="roll.isRollCritWin"
+                              class="ml-1"
+                            >+ [{{ step.rolls.wildRolls.join(" + ") }}]</span>
+                            <!-- eslint-enable -->
 
-                        <span v-if="index+1 != step.rolls.dices.length" class="mx-1">+</span>
-                      </span>
-                      )
-                      =
-                      <span
-                        class="font-weight-bold"
-                      >{{step.rolls.score}}</span>
-                    </small>
-                  </li>
-                </ol>
+                            <span v-if="index+1 != step.rolls.dices.length" class="mx-1">+</span>
+                          </span>
+                          )
+                          =
+                          <span
+                            class="font-weight-bold"
+                          >{{step.rolls.score}}</span>
+                        </small>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -87,6 +117,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import attributes from '../data/attributes.json';
 
 const fb = require('../firebase');
 
@@ -99,27 +130,34 @@ export default {
   },
   data() {
     return {
-      campaign: {
+      encounter: {
         name: '',
         characters: [],
       },
       round: [],
-      NPCIndexes: [],
+      NPCIndexes: 0,
+      attributes,
     };
   },
   computed: {
     ...mapState(['characters']),
     availableCharacters() {
       return this.characters.filter(
-        (el) => !this.campaign.characters.includes(el.id) || el.type === 'NPC',
+        (el) => !this.encounter.characters.includes(el.id) || el.type === 'NPC',
       );
     },
     availablePlayers() {
-      return this.campaign.characters.map((el) => ({
-        id: el,
-        name: this.characters.find((item) => item.id === el).name,
-        attributes: this.characters.find((item) => item.id === el).attributes,
-      }));
+      return this.encounter.characters.map((el) => {
+        const characterId = el.id || el;
+        const character = this.characters.find((item) => item.id === characterId);
+        return {
+          id: characterId,
+          name: character.name,
+          attributes: character.attributes,
+          npcId: el.npcId || '',
+          type: character.type,
+        };
+      });
     },
   },
   created() {
@@ -132,15 +170,22 @@ export default {
         .get()
         .then((querySnapshot) => {
           if (querySnapshot.exists) {
-            this.campaign = querySnapshot.data();
+            this.encounter = querySnapshot.data();
           }
         });
     },
-    addCharacterToCampaign(characterId) {
-      this.campaign.characters.push(characterId);
+    addCharacterToEncounter(characterId) {
+      if (this.characters.find((el) => characterId === el.id).type === 'NPC') {
+        this.encounter.characters.push({
+          id: characterId,
+          npcId: (this.NPCIndexes += 1),
+        });
+      } else {
+        this.encounter.characters.push(characterId);
+      }
     },
-    removeCharacterToCampaign(index) {
-      this.campaign.characters.splice(index, 1);
+    removeCharacterToEncounter(index) {
+      this.encounter.characters.splice(index, 1);
     },
     rollWildDice(wildRolls) {
       const roll = Math.floor(Math.random() * 6 + 1);
@@ -209,17 +254,18 @@ export default {
 
       return { score, dices, wildRolls };
     },
-    computeInitiative() {
+    executeRolls(attribute) {
       this.round = [];
-      this.campaign.characters.forEach((characterIdToCompute) => {
-        const characterToCompute = this.characters.find((item) => item.id === characterIdToCompute);
-        const dexDice = characterToCompute.attributes
-          ? characterToCompute.attributes.dex || '2d'
+      this.availablePlayers.forEach((characterToCompute) => {
+        const valueDice = characterToCompute.attributes
+          ? characterToCompute.attributes[attribute] || '2d'
           : '2d';
-
         this.round.push({
-          characterId: characterIdToCompute,
-          rolls: this.rollDices(dexDice),
+          attribute,
+          valueDice,
+          characterId: characterToCompute.id,
+          npcId: characterToCompute.npcId,
+          rolls: this.rollDices(valueDice),
         });
       });
       this.round.sort((a, b) => b.rolls.score - a.rolls.score);

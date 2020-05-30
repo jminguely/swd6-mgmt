@@ -3,14 +3,14 @@ import 'firebase/firestore';
 
 // firebase init goes here
 const config = {
-  apiKey: 'AIzaSyAuB_vveb5spiHM4SReGRjA_mD1gMyQku8',
-  authDomain: 'swd6-mgmt.firebaseapp.com',
-  databaseURL: 'https://swd6-mgmt.firebaseio.com',
-  projectId: 'swd6-mgmt',
-  storageBucket: 'swd6-mgmt.appspot.com',
-  messagingSenderId: '471935014158',
-  appId: '1:471935014158:web:e35c2a6f6249187129f35f',
-  measurementId: 'G-CWCMBZ1Q03',
+  apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
+  authDomain: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.VUE_APP_FIREBASE_DB_URL,
+  projectId: process.env.VUE_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.VUE_APP_FIREBASE_APP_ID,
+  measurementId: process.env.VUE_APP_FIREBASE_MEASUREMENT_ID,
 };
 firebase.initializeApp(config);
 

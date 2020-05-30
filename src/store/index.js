@@ -25,6 +25,10 @@ const store = new Vuex.Store({
     setCampaigns(state, val) {
       state.campaigns = val;
     },
+    updateCampaigns(state, val) {
+      fb.charactersCollection.update(val).then((res) => console.log('Message sent.', res))
+        .catch((err) => console.log('Error', err));
+    },
   },
   actions: {
     clearData({ commit }) {

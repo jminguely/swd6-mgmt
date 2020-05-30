@@ -6,8 +6,14 @@
         <div class="create-campaign">
           <p>create a campaign</p>
           <form @submit.prevent>
-            <input v-model.trim="campaign.name" type="text" id="campaignName" />
-            <button @click="createCampaign" :disabled="campaign.name == ''" class="button">
+            <input
+              v-model.trim="campaign.name"
+              type="text" id="campaignName"
+            />
+            <button
+              @click="createCampaign"
+              :disabled="campaign.name == ''"
+              class="button">
               campaign
             </button>
           </form>
@@ -16,7 +22,7 @@
 
       <ul v-if="campaigns.length">
         <li v-for="campaign in campaigns" v-bind:key="campaign.id" class="campaign">
-          <router-link :to="{ path: `campaigns/${campaign.id}` }"> {{ campaign.name }}</router-link>
+          <router-link :to="{ path: `campaigns/${campaign.id}` }">{{ campaign.name }}</router-link>
         </li>
       </ul>
       <div v-else>
@@ -54,8 +60,8 @@ export default {
         .then(() => {
           this.post.content = '';
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          // console.log(err);
         });
     },
   },

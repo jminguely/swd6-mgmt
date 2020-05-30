@@ -97,7 +97,7 @@ export default {
   watch: {
     campaign: {
       handler() {
-        return this.updateCampaign();
+        // return this.updateCampaign();
       },
       deep: true,
     },

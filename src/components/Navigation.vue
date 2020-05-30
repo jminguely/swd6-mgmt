@@ -1,9 +1,9 @@
 <template>
   <header>
     <section>
-      <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">SWD6 MGMT</a>
-        <div class="collapse navbar-collapse" id="navbarNav">
+      <nav class="navbar navbar-expand navbar-dark bg-dark mb-3">
+        <a class="navbar-brand" href="/">SWD6 MGMT</a>
+        <div class="collapse navbar-collapse">
           <ul class="navbar-nav d-flex w-100">
             <li class="nav-item">
               <router-link class="nav-link" to="/campaigns">Campaigns</router-link>
@@ -14,7 +14,7 @@
             <li class="nav-item">
               <router-link class="nav-link" to="/settings">Settings</router-link>
             </li>
-            <li class="nav-item ml-sm-auto my-md-0 my-3">
+            <li class="nav-item ml-sm-auto">
               <a href="#" class="btn btn-outline-danger" @click="logout">Logout</a>
             </li>
           </ul>
@@ -36,9 +36,7 @@ export default {
           this.$store.dispatch('clearData');
           this.$router.push('/login');
         })
-        .catch((err) => {
-          console.log(err);
-        });
+        .catch(() => {});
     },
   },
 };

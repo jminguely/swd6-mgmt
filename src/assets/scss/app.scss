@@ -3,3 +3,8 @@
 .text-striked {
   text-decoration: line-through;
 }
+
+a:not([href]) {
+  color: none;
+  text-decoration: none;
+}
