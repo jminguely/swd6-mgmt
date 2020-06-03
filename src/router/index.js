@@ -9,7 +9,6 @@ import Encounter from '../components/Encounter.vue';
 import Campaigns from '../components/Campaigns.vue';
 import Character from '../components/Character.vue';
 import Characters from '../components/Characters.vue';
-import Settings from '../components/Settings.vue';
 
 Vue.use(VueRouter);
 
@@ -63,14 +62,6 @@ const routes = [
     path: '/characters',
     name: 'Characters',
     component: Characters,
-    meta: {
-      requiresAuth: true,
-    },
-  },
-  {
-    path: '/settings',
-    name: 'Settings',
-    component: Settings,
     meta: {
       requiresAuth: true,
     },

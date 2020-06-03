@@ -1,19 +1,13 @@
 <template>
   <div id="campaigns">
-    <section>
+    <section class="container-fluid">
       <div class="profile">
         <h5>{{ userProfile.name }}</h5>
         <div class="create-campaign">
           <p>create a campaign</p>
           <form @submit.prevent>
-            <input
-              v-model.trim="campaign.name"
-              type="text" id="campaignName"
-            />
-            <button
-              @click="createCampaign"
-              :disabled="campaign.name == ''"
-              class="button">
+            <input v-model.trim="campaign.name" type="text" id="campaignName" />
+            <button @click="createCampaign" :disabled="campaign.name == ''" class="button">
               campaign
             </button>
           </form>

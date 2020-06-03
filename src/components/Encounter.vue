@@ -18,14 +18,13 @@
                         class="btn btn-sm mb-2 mr-2"
                         :class="{
                           'btn-secondary': character.type == 'NPC',
-                          'btn-primary': character.type != 'NPC'
+                          'btn-primary': character.type != 'NPC',
                         }"
                       >
                         {{ character.name }}
-                        <small
-                          v-if="character.npcId"
-                          class="badge badge-dark"
-                        >{{ character.npcId }}</small>
+                        <small v-if="character.npcId" class="badge badge-dark">{{
+                          character.npcId
+                        }}</small>
                       </a>
                     </div>
                   </div>
@@ -38,10 +37,11 @@
                         class="btn btn-sm mb-2 mr-2"
                         :class="{
                           'btn-secondary': character.type == 'NPC',
-                          'btn-primary': character.type != 'NPC'
+                          'btn-primary': character.type != 'NPC',
                         }"
                         @click="addCharacterToEncounter(character.id)"
-                      >{{ character.name }}, {{ character.type }}</a>
+                        >{{ character.name }}, {{ character.type }}</a
+                      >
                     </div>
                   </div>
                 </div>
@@ -53,54 +53,50 @@
                   v-for="attribute in attributes"
                   v-bind:key="attribute"
                   class="btn btn-danger btn-sm mb-2 mr-2"
-                >{{attribute}}</a>
+                  >{{ attribute }}</a
+                >
               </div>
               <div class="col-12">
                 <table class="table table-stripped" v-if="round.length">
                   <thead>
-                    <tr>
-                      <td>Name</td>
-                      <td>Dice</td>
-                      <td>Value</td>
-                      <td>Result</td>
+                    <tr class="d-flex">
+                      <td class="col-2">Name</td>
+                      <td class="col-2">Dice</td>
+                      <td class="col-2">Value</td>
+                      <td class="col-6">Result</td>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(step, index) in round" v-bind:key="index">
-                      <td>
+                    <tr class="d-flex" v-for="(step, index) in round" v-bind:key="index">
+                      <td class="col-2">
                         {{ characters.find((item) => item.id == step.characterId).name }}
-                        <small
-                          v-if="step.npcId"
-                          class="badge badge-dark"
-                        >{{ step.npcId }}</small>
+                        <small v-if="step.npcId" class="badge badge-dark">{{ step.npcId }}</small>
                       </td>
-                      <td>{{ step.attribute }}</td>
-                      <td>{{ step.valueDice }}</td>
-                      <td>
+                      <td class="col-2">{{ step.attribute }}</td>
+                      <td class="col-2">{{ step.valueDice }}</td>
+                      <td class="col-6">
                         <small>
                           (
                           <span v-for="(roll, index) in step.rolls.dices" v-bind:key="index">
                             <span
                               :class="{
-                            'text-striked' : roll.isRollValid == false,
-                            'font-weight-bold' : roll.isRollWild == true,
-                            'text-danger' : roll.isRollCritFail == true,
-                            'text-success' : roll.isRollCritWin == true}"
-                            >{{roll.result}}</span>
+                                'text-striked': roll.isRollValid == false,
+                                'font-weight-bold': roll.isRollWild == true,
+                                'text-danger': roll.isRollCritFail == true,
+                                'text-success': roll.isRollCritWin == true,
+                              }"
+                              >{{ roll.result }}</span
+                            >
                             <!-- eslint-disable -->
-                            <span
-                              v-if="roll.isRollCritWin"
-                              class="ml-1"
-                            >+ [{{ step.rolls.wildRolls.join(" + ") }}]</span>
+                            <span v-if="roll.isRollCritWin" class="ml-1"
+                              >+ [{{ step.rolls.wildRolls.join(' + ') }}]</span
+                            >
                             <!-- eslint-enable -->
 
-                            <span v-if="index+1 != step.rolls.dices.length" class="mx-1">+</span>
+                            <span v-if="index + 1 != step.rolls.dices.length" class="mx-1">+</span>
                           </span>
-                          )
-                          =
-                          <span
-                            class="font-weight-bold"
-                          >{{step.rolls.score}}</span>
+                          ) =
+                          <span class="font-weight-bold">{{ step.rolls.score }}</span>
                         </small>
                       </td>
                     </tr>

@@ -4,7 +4,7 @@
       <div class="profile">
         <div class="edit-campaign">
           <div class="container-fluid">
-            <div class="row">
+            <div class="row" v-if="campaign">
               <div class="col-12">
                 <h1>{{ campaign.name }}</h1>
                 <form>
@@ -80,14 +80,14 @@ export default {
   },
   data() {
     return {
-      campaign: {
-        name: '',
-        characters: [],
-      },
+      name: '',
     };
   },
   computed: {
-    ...mapState(['characters']),
+    ...mapState(['characters', 'campaigns']),
+    campaign() {
+      return this.campaigns.find((el) => el.id === this.id);
+    },
     availableCharacters() {
       return this.characters.filter(
         (el) => !this.campaign.characters.includes(el.id) && el.type === 'PC',
@@ -97,25 +97,12 @@ export default {
   watch: {
     campaign: {
       handler() {
-        // return this.updateCampaign();
+        return this.updateCampaign();
       },
       deep: true,
     },
   },
-  created() {
-    this.fetchData();
-  },
   methods: {
-    fetchData() {
-      fb.campaignsCollection
-        .doc(this.id)
-        .get()
-        .then((querySnapshot) => {
-          if (querySnapshot.exists) {
-            this.campaign = querySnapshot.data();
-          }
-        });
-    },
     updateCampaign() {
       fb.campaignsCollection
         .doc(this.id)

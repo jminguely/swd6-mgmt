@@ -8,11 +8,9 @@
             <p>create a character</p>
             <form @submit.prevent>
               <input v-model.trim="character.name" type="text" id="characterName" />
-              <button
-                @click="createCharacter"
-                :disabled="character.name == ''"
-                class="button"
-              >character</button>
+              <button @click="createCharacter" :disabled="character.name == ''" class="button">
+                character
+              </button>
             </form>
           </div>
         </div>
@@ -24,13 +22,16 @@
                 <th rowspan="2" class="align-top">Player</th>
                 <th rowspan="2" class="align-top">Type</th>
                 <th :colspan="attributes.length" class="border-bottom-0 pb-0">Attributes</th>
+                <th rowspan="2" class="align-top">Remove</th>
               </tr>
               <tr>
                 <th
                   v-for="attribute in attributes"
                   class="border-top-0 text-muted pt-0"
                   v-bind:key="attribute"
-                >{{ attribute }}</th>
+                >
+                  {{ attribute }}
+                </th>
               </tr>
             </thead>
             <tbody>

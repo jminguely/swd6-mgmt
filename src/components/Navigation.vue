@@ -11,9 +11,6 @@
             <li class="nav-item">
               <router-link class="nav-link" to="/characters">Characters</router-link>
             </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="/settings">Settings</router-link>
-            </li>
             <li class="nav-item ml-sm-auto">
               <a href="#" class="btn btn-outline-danger" @click="logout">Logout</a>
             </li>
